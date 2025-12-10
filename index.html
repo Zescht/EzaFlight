@@ -6,6 +6,7 @@
     <title>Gunj Airlines Journey</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
@@ -19,65 +20,93 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            
-            /* CHANGE: Use 'cover' to fill screen without stretching/distorting */
-            background: url('https://i.imgur.com/CRmCfxH.jpeg') no-repeat center center;
-            background-size: cover; 
-            
+            width: 100%;
+            height: 100%;
+            background-color: #000; /* Cinema style black bars if aspect ratio differs */
             z-index: 99999;
             display: flex;
+            align-items: center; 
+            justify-content: center;
             transition: opacity 0.5s ease;
         }
 
-        /* Container for the typewriter text - Aligned to Speech Bubble */
+        /* The Wrapper keeps the image and text locked together */
+        #intro-wrapper {
+            position: relative;
+            width: auto;
+            height: auto;
+            max-width: 100vw;
+            max-height: 100vh;
+            /* Important: Keep aspect ratio or the coordinates will drift */
+            aspect-ratio: 16 / 9; 
+        }
+
+        /* The Intro Image */
+        #intro-image {
+            display: block;
+            max-width: 100vw;
+            max-height: 100vh;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* --- TEXT CONTAINER (Using your calibrated coordinates) --- */
         #intro-text-container {
             position: absolute;
             
-            /* Rough position of the speech bubble in your image */
-            top: 18%;   
-            right: 10%; 
+            /* YOUR COORDINATES */
+            top: 9.33%;
+            left: 63.85%;
+            width: 17.91%;
+            height: 16.28%;
             
-            width: 320px; 
+            /* Layout logic */
+            display: flex;
+            align-items: center; /* Vertically Center the text block */
+            justify-content: flex-start; /* Horizontal Left */
             
             /* Text Styling */
             font-family: 'Patrick Hand', cursive;
-            font-size: 26px;
+            /* Font size scales with the view width so it always fits the box */
+            font-size: 1.2vw; 
+            line-height: 1.2;
             font-weight: bold;
             color: #000;
-            line-height: 1.3;
-            text-align: left;
+            text-align: left; /* Left aligned text */
+            
+            /* Rotate slightly to match the hand-drawn style */
+            transform: rotate(-1deg);
+            overflow: hidden; 
         }
         
         /* Start Button */
         #start-btn {
             position: absolute;
-            bottom: 10%;
+            bottom: 5%;
             left: 50%;
             transform: translateX(-50%);
-            padding: 15px 40px;
+            padding: 10px 30px;
             font-family: 'Patrick Hand', cursive;
-            font-size: 28px;
+            font-size: 2vw; /* Responsive size */
             font-weight: bold;
             background: #e74c3c;
             color: white;
-            border: 2px solid white;
+            border: 3px solid white;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-            z-index: 100000;
-            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            white-space: nowrap;
         }
         #start-btn:hover { background: #c0392b; transform: translateX(-50%) scale(1.05); }
 
         .cursor {
             display: inline-block;
             width: 2px;
-            height: 24px;
+            height: 1em;
             background-color: black;
             animation: blink 0.8s infinite;
-            vertical-align: sub;
+            vertical-align: bottom;
         }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
@@ -126,10 +155,15 @@
 <body>
 
 <div id="intro-screen">
-    <div id="intro-text-container">
-        <span id="typewriter-text"></span><span class="cursor"></span>
+    <div id="intro-wrapper">
+        <img id="intro-image" src="https://i.imgur.com/CRmCfxH.jpeg" alt="Intro Scene">
+        
+        <div id="intro-text-container">
+            <div><span id="typewriter-text"></span><span class="cursor"></span></div>
+        </div>
+        
+        <button id="start-btn">Start Journey</button>
     </div>
-    <button id="start-btn">Start Journey</button>
 </div>
 
 <div id="map"></div>
@@ -176,6 +210,7 @@
         ulaanbaatar: [47.918, 106.918], istanbul: [41.008, 28.978], vienna: [48.208, 16.373]
     };
 
+    // FRAMING 
     var southWest = L.latLng(30.0, -5.0); 
     var northEast = L.latLng(55.0, 125.0); 
     var bounds = L.latLngBounds(southWest, northEast);
